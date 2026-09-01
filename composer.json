@@ -1,0 +1,20 @@
+{
+    "name": "dieylene/heritage2",
+    "autoload": {
+        "psr-4": {
+            "App\\Core\\": "src/Core/",
+      "App\\Model\\": "src/Repository/",
+      "App\\Http\\": "src/Controller/",
+      "App\\Entity\\": "src/Entity/",
+      "App\\Service\\": "src/Service/"
+    
+        }
+    },
+    "authors": [
+        {
+            "name": "dieynalene2",
+            "email": "dieylene@gmail.com"
+        }
+    ],
+    "require": {}
+}
