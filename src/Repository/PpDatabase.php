@@ -1,6 +1,5 @@
 <?php
-
-namespace Config;
+namespace App\Model;
 
 abstract class PpDatabase
 {
