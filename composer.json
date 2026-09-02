@@ -2,11 +2,14 @@
     "name": "dieylene/heritage2",
     "autoload": {
         "psr-4": {
-            "App\\Core\\": "src/Core/",
+        "App\\Container\\": "src/Container/",
       "App\\Model\\": "src/Repository/",
       "App\\Http\\": "src/Controller/",
       "App\\Entity\\": "src/Entity/",
-      "App\\Service\\": "src/Service/"
+      "App\\Service\\": "src/Service/" ,
+        "App\\Router\\": "src/Router/",
+        "App\\DTO\\": "src/DTO/"
+
     
         }
     },
