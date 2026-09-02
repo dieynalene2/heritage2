@@ -8,7 +8,8 @@
       "App\\Entity\\": "src/Entity/",
       "App\\Service\\": "src/Service/" ,
         "App\\Router\\": "src/Router/",
-        "App\\DTO\\": "src/DTO/"
+        "App\\DTO\\": "src/DTO/",
+        "Config\\":"Config"
 
     
         }
@@ -19,5 +20,7 @@
             "email": "dieylene@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "vlucas/phpdotenv": "^5.7"
+    }
 }

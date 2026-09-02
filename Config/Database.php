@@ -1,88 +1,54 @@
 <?php
 
-namespace App\Database;
+namespace Config;
 
-abstract class Database
+use PDO;
+use PDOException;
+
+
+class Database
 {
-    private static ?\PDO $instance = null;
+    private static ?PDO $connection = null;
+    private string $host;
+    private string $dbName;
+    private string $username;
+    private string $password;
+    private int $port;
 
-    protected static function getConnexion(): \PDO
+    private function __construct()
     {
-        if (self::$instance === null) {
-            try {
-                $db = 'pgsql:host=localhost;port=5432;dbname=copienote';
-                self::$instance = new \PDO($db, 'postgre', '1234', [
-                    \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-                    \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
-                ]);
-            } catch (\PDOException $e) {
-                throw new \Exception('Erreur de connexion à la base de donnée : ' . $e->getMessage());
-            }
+        $this->host =  $_ENV['DB_HOST'];
+        $this->dbName =  $_ENV['DB_NAME'] ;
+        $this->username =  $_ENV['DB_USER'] ;
+        $this->password =  $_ENV['DB_PASS'] ;
+        $this->port =  $_ENV['DB_PORT'];
+    }
+
+
+    public static function getConnection(): PDO
+    {
+        if (self::$connection === null) {
+            self::$connection = (new self())->connect();
         }
-
-        return self::$instance;
+        return self::$connection;
     }
 
-    protected function query(string $sql, bool $bool = true): mixed
+    private function connect(): PDO
     {
-        $pdo = static::getConnexion();
-        $query = $pdo->query($sql);
-
-        return $bool ? $query->fetch(\PDO::FETCH_OBJ) : $query->fetchAll(\PDO::FETCH_OBJ);
-    }
-
-    protected function prepare(string $sql, array $data = []): \PDOStatement
-    {
-        $pdo = static::getConnexion();
-        $prepare = $pdo->prepare($sql);
-
-        foreach ($data as $key => $value) {
-            $type = \PDO::PARAM_STR;
-
-            if (is_int($value)) {
-                $type = \PDO::PARAM_INT;
-            } elseif (is_bool($value)) {
-                $type = \PDO::PARAM_BOOL;
-            } elseif ($value === null) {
-                $type = \PDO::PARAM_NULL;
-            }
-
-            $prepare->bindValue($key, $value, $type);
+        try {
+            $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->dbName}";
+            $options = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ];
+            return new PDO($dsn, $this->username, $this->password, $options);
+        } catch (PDOException $e) {
+            die("Erreur de connexion à la base de données : " . $e->getMessage());
         }
-
-        $prepare->execute();
-
-        return $prepare;
     }
-
-    protected function executeQuery(string $sql, array $data, bool $bool = true): mixed
+  
+    public static function closeConnection(): void
     {
-        $statement = $this->prepare($sql, $data);
-
-        return $bool ? $statement->fetch() : $statement->fetchAll(\PDO::FETCH_OBJ);
-    }
-
-    protected function executeUpdate(string $sql, array $datas): int|string
-    {
-        $pdo = static::getConnexion();
-        $statement = $pdo->prepare($sql);
-
-        foreach ($datas as $key => $value) {
-            $type = \PDO::PARAM_STR;
-
-            if (is_int($value)) {
-                $type = \PDO::PARAM_INT;
-            } elseif (is_bool($value)) {
-                $type = \PDO::PARAM_BOOL;
-            } elseif ($value === null) {
-                $type = \PDO::PARAM_NULL;
-            }
-
-            $statement->bindValue($key, $value, $type);
-        }
-
-        $statement->execute();
-
-        return (str_starts_with(strtoupper(trim($sql)), 'INSERT')) ? (string) $pdo->lastInsertId() : (string) $statement->rowCount();
+        self::$connection = null;
     }
 }
