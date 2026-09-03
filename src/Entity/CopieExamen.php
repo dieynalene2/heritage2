@@ -1,4 +1,8 @@
 <?php
+namespace App\Entity;
+
+        
+use InvalidArgumentException;
 
 class CopieExamen extends AbstractDocument {
     private float $noteBrute;

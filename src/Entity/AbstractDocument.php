@@ -1,4 +1,5 @@
 <?php
+namespace App\Entity;
 
 abstract class AbstractDocument {
     protected ?int $id = null;
